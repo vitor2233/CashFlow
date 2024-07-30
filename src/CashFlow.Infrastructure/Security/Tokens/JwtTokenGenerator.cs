@@ -7,22 +7,17 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CashFlow.Infrastructure.Security.Tokens;
 
-internal class JwtTokenGenerator : IAccessTokenGenerator
+internal class JwtTokenGenerator(uint expirationTimeMinutes, string signingKey) : IAccessTokenGenerator
 {
-    private readonly uint _expirationTimeMinutes;
-    private readonly string _signingKey;
-
-    public JwtTokenGenerator(uint expirationTimeMinutes, string signingKey)
-    {
-        _expirationTimeMinutes = expirationTimeMinutes;
-        _signingKey = signingKey;
-    }
+    private readonly uint _expirationTimeMinutes = expirationTimeMinutes;
+    private readonly string _signingKey = signingKey;
 
     public string Generate(User user)
     {
         var claims = new List<Claim>()
         {
             new(ClaimTypes.Sid, user.UserIdentifier.ToString()),
+            new(ClaimTypes.Role, user.Role),
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor
