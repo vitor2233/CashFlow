@@ -31,10 +31,10 @@ public class RegisterUserUseCaseTest
         request.Name = string.Empty;
 
         var useCase = CreateUseCase();
-        var act = async ()=> await useCase.Execute(request);
+        var act = async () => await useCase.Execute(request);
 
         var result = await act.Should().ThrowAsync<ErrorOnValidationException>();
-        result.Where(e=> e.GetErrors().Count == 1 && e.GetErrors().Contains("Name is required."));
+        result.Where(e => e.GetErrors().Count == 1 && e.GetErrors().Contains("Name is required."));
     }
 
     [Fact]
@@ -43,10 +43,10 @@ public class RegisterUserUseCaseTest
         var request = RequestRegisterUserJsonBuilder.Build();
 
         var useCase = CreateUseCase(request.Email);
-        var act = async ()=> await useCase.Execute(request);
+        var act = async () => await useCase.Execute(request);
 
         var result = await act.Should().ThrowAsync<ErrorOnValidationException>();
-        result.Where(e=> e.GetErrors().Count == 1 && e.GetErrors().Contains("Email já está sendo utilizado"));
+        result.Where(e => e.GetErrors().Count == 1 && e.GetErrors().Contains("Email já está sendo utilizado"));
     }
 
     private RegisterUserUseCase CreateUseCase(string? email = null)
@@ -54,10 +54,10 @@ public class RegisterUserUseCaseTest
         var mapper = MapperBuilder.Build();
         var unitOfWork = UnitOfWorkBuilder.Build();
         var writeOnlyRepository = UserWriteOnlyRepositoryBuilder.Build();
-        var passwordEncripter = PasswordEncripterBuilder.Build();
+        var passwordEncripter = new PasswordEncripterBuilder().Build();
         var jwtTokenGenerator = JwtTokenGeneratorBuilder.Build();
         var readOnlyUserRepository = new UserReadOnlyRepositoryBuilder();
-        if(!string.IsNullOrWhiteSpace(email))
+        if (!string.IsNullOrWhiteSpace(email))
         {
             readOnlyUserRepository.ExistActiveUserWithEmail(email);
         }
