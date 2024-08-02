@@ -35,7 +35,7 @@ public class UpdateExpenseUseCase : IUpdateExpenseUseCase
 
         if (expense is null)
         {
-            throw new NotFoundException("Despesa não encontrada");
+            throw new NotFoundException("Expense not found.");
         }
 
         _mapper.Map(request, expense);

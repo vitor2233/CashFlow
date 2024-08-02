@@ -34,7 +34,7 @@ public class DeleteExpenseUseCase : IDeleteExpenseUseCase
 
         if (expense is null)
         {
-            throw new NotFoundException("Despesa não encontrada");
+            throw new NotFoundException("Expense not found.");
         }
 
         await _writeOnlyRepository.Delete(id);

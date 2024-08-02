@@ -27,7 +27,7 @@ public class GetExpenseByIdUseCase : IGetExpenseByIdUseCase
 
         if (result is null)
         {
-            throw new NotFoundException("Despesa não encontrada");
+            throw new NotFoundException("Expense not found.");
         }
 
         return _mapper.Map<ResponseExpenseJson>(result);

@@ -12,12 +12,14 @@ namespace WebApi.Test;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private Expense _expense;
     private User _user;
     private string _password;
     private string _token;
     public string GetEmail() => _user.Email;
     public string GetPassword() => _password;
     public string GetToken() => _token;
+    public long GetExpenseId() => _expense.Id;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test")
@@ -56,8 +58,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     private void AddExpenses(CashFlowDbContext context, User user)
     {
-        var expenses = ExpenseBuilder.Collection(user);
-        context.Expenses.AddRange(expenses);
+        _expense = ExpenseBuilder.Build(user);
+        context.Expenses.Add(_expense);
         context.SaveChanges();
     }
 }
