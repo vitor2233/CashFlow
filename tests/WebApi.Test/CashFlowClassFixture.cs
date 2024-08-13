@@ -7,6 +7,18 @@ public class CashFlowClassFixture(CustomWebApplicationFactory webApplicationFact
 {
     private readonly HttpClient _httpClient = webApplicationFactory.CreateClient();
 
+    protected async Task<HttpResponseMessage> DoDelete(string requestUri, string token = "")
+    {
+        AuthorizeRequest(token);
+        return await _httpClient.DeleteAsync(requestUri);
+    }
+
+    protected async Task<HttpResponseMessage> DoPut(string requestUri, object request, string token = "")
+    {
+        AuthorizeRequest(token);
+        return await _httpClient.PutAsJsonAsync(requestUri, request);
+    }
+
     protected async Task<HttpResponseMessage> DoPost(string requestUri, object request, string token = "")
     {
         AuthorizeRequest(token);

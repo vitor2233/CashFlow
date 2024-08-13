@@ -3,14 +3,14 @@ using System.Text.Json;
 using CommonTestUtilities;
 using FluentAssertions;
 
-namespace WebApi.Test.Expenses.GetById;
+namespace WebApi.Test.Expenses.Delete;
 
-public class GetExpenseByIdTest : CashFlowClassFixture
+public class DeleteExpenseIdTest : CashFlowClassFixture
 {
     private const string METHOD = "api/Expenses/";
     private readonly string _token;
     private readonly long _expenseId;
-    public GetExpenseByIdTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
+    public DeleteExpenseIdTest(CustomWebApplicationFactory webApplicationFactory) : base(webApplicationFactory)
     {
         _token = webApplicationFactory.User_Team_Member.GetToken();
         _expenseId = webApplicationFactory.Expense_Team_Member.GetExpenseId();
@@ -19,23 +19,19 @@ public class GetExpenseByIdTest : CashFlowClassFixture
     [Fact]
     public async Task Success()
     {
-        var result = await DoGet($"{METHOD}{_expenseId}", token: _token);
+        var result = await DoDelete($"{METHOD}{_expenseId}", token: _token);
 
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var body = await result.Content.ReadAsStreamAsync();
+        var resultGet = await DoGet($"{METHOD}{_expenseId}", token: _token);
 
-        var response = await JsonDocument.ParseAsync(body);
-
-        response.RootElement.GetProperty("id").GetInt64().Should().Be(_expenseId);
-        response.RootElement.GetProperty("title").GetString().Should().NotBeNullOrWhiteSpace();
-        response.RootElement.GetProperty("date").GetDateTime().Should().NotBeAfter(DateTime.Now);
+        resultGet.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task Error_Expense_Not_Found()
     {
-        var result = await DoGet($"{METHOD}{100}", token: _token);
+        var result = await DoDelete($"{METHOD}{100}", token: _token);
 
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
 

@@ -8,12 +8,14 @@ using CashFlow.Domain.Entities;
 using CashFlow.Domain.Security.Cryptography;
 using CashFlow.Domain.Security.Tokens;
 using WebApi.Test.Resources;
+using CashFlow.Domain.Enums;
 
 namespace WebApi.Test;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
-    public ExpenseIdentityManager Expense { get; private set; } = default!;
+    public ExpenseIdentityManager Expense_Team_Member { get; private set; } = default!;
+    public ExpenseIdentityManager Expense_Admin { get; private set; } = default!;
     public UserIdentityManager User_Team_Member { get; private set; } = default!;
     public UserIdentityManager User_Admin { get; private set; } = default!;
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -38,14 +40,19 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     private void StartDatabase(CashFlowDbContext context, IPasswordEncripter passwordEncripter, IAccessTokenGenerator tokenGenerator)
     {
-        var user = AddUserTeamMember(context, passwordEncripter, tokenGenerator);
-        AddExpenses(context, user);
+        var userTeamMember = AddUserTeamMember(context, passwordEncripter, tokenGenerator);
+        Expense_Team_Member = AddExpenses(context, userTeamMember, expenseId: 1);
+
+        var userAdmin = AddUserAdmin(context, passwordEncripter, tokenGenerator);
+        Expense_Admin = AddExpenses(context, userAdmin, expenseId: 2);
+
         context.SaveChanges();
     }
 
     private User AddUserTeamMember(CashFlowDbContext context, IPasswordEncripter passwordEncripter, IAccessTokenGenerator tokenGenerator)
     {
         var user = UserBuilder.Build();
+        user.Id = 1;
         var password = user.Password;
         user.Password = passwordEncripter.Encrypt(user.Password);
         context.Users.Add(user);
@@ -56,11 +63,26 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
         return user;
     }
 
-    private void AddExpenses(CashFlowDbContext context, User user)
+    private User AddUserAdmin(CashFlowDbContext context, IPasswordEncripter passwordEncripter, IAccessTokenGenerator tokenGenerator)
+    {
+        var user = UserBuilder.Build(Roles.ADMIN);
+        user.Id = 2;
+        var password = user.Password;
+        user.Password = passwordEncripter.Encrypt(user.Password);
+        context.Users.Add(user);
+
+        var token = tokenGenerator.Generate(user);
+        User_Admin = new UserIdentityManager(user, password, token);
+
+        return user;
+    }
+
+    private ExpenseIdentityManager AddExpenses(CashFlowDbContext context, User user, long expenseId)
     {
         var expense = ExpenseBuilder.Build(user);
+        expense.Id = expenseId;
         context.Expenses.Add(expense);
 
-        Expense = new ExpenseIdentityManager(expense);
+        return new ExpenseIdentityManager(expense);
     }
 }
