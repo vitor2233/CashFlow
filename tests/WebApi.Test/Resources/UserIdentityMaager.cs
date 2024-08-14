@@ -8,6 +8,7 @@ public class UserIdentityManager(User user, string password, string token)
     private readonly string _token = token;
 
     public string GetEmail() => _user.Email;
+    public string GetName() => _user.Name;
     public string GetPassword() => _password;
     public string GetToken() => _token;
 }
