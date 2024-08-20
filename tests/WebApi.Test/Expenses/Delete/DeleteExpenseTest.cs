@@ -31,7 +31,7 @@ public class DeleteExpenseIdTest : CashFlowClassFixture
     [Fact]
     public async Task Error_Expense_Not_Found()
     {
-        var result = await DoDelete($"{METHOD}{100}", token: _token);
+        var result = await DoDelete($"{METHOD}{1000}", token: _token);
 
         result.StatusCode.Should().Be(HttpStatusCode.NotFound);
 

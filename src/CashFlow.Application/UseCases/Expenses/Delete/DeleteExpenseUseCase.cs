@@ -30,7 +30,7 @@ public class DeleteExpenseUseCase : IDeleteExpenseUseCase
     {
         var loggedUser = await _loggedUser.Get();
 
-        var expense = _readOnlyRepository.GetById(loggedUser, id);
+        var expense = await _readOnlyRepository.GetById(loggedUser, id);
 
         if (expense is null)
         {
