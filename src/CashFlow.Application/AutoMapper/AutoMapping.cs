@@ -18,7 +18,12 @@ public class AutoMapping : Profile
 
     private void RequestToEntity()
     {
-        CreateMap<RequestExpenseJson, Expense>();
+        CreateMap<RequestExpenseJson, Expense>()
+            .ForMember(dest => dest.Tags, config => config.MapFrom(source => source.Tags.Distinct()));
+
+        CreateMap<Communication.Enums.Tag, Tag>()
+            .ForMember(dest => dest.Value, config => config.MapFrom(source => source));
+
         CreateMap<RequestRegisterUserJson, User>()
             .ForMember(dest => dest.Password, config => config.Ignore());
     }
@@ -27,7 +32,8 @@ public class AutoMapping : Profile
     {
         CreateMap<Expense, ResponseRegisterExpenseJson>();
         CreateMap<Expense, ResponseShortExpensesJson>();
-        CreateMap<Expense, ResponseExpenseJson>();
+        CreateMap<Expense, ResponseExpenseJson>()
+            .ForMember(dest => dest.Tags, config => config.MapFrom(source => source.Tags.Select(t => t.Value)));
         CreateMap<User, ResponseUserProfileJson>();
     }
 }

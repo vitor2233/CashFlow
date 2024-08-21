@@ -1,4 +1,5 @@
 using CashFlow.Application.UseCases.Expenses;
+using CashFlow.Communication.Enums;
 using CommonTestUtilities;
 using FluentAssertions;
 
@@ -88,5 +89,21 @@ public class RegisterExpenseValidatorTests
         //Assert
         result.IsValid.Should().BeFalse();
         result.Errors.Should().ContainSingle().And.Contain(e => e.ErrorMessage.Equals("Amount must be greater than zero."));
+    }
+
+    [Fact]
+    public void Error_Tag_Invalid()
+    {
+        //Arrange
+        var validator = new ExpenseValidator();
+        var request = RequestExpenseJsonBuilder.Build();
+        request.Tags.Add((Tag)1000);
+
+        //Act
+        var result = validator.Validate(request);
+
+        //Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().ContainSingle().And.Contain(e => e.ErrorMessage.Equals("Tag is not valid."));
     }
 }

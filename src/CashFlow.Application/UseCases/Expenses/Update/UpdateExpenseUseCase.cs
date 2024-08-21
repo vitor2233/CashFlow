@@ -38,6 +38,8 @@ public class UpdateExpenseUseCase : IUpdateExpenseUseCase
             throw new NotFoundException("Expense not found.");
         }
 
+        expense.Tags.Clear();
+
         _mapper.Map(request, expense);
 
         _repository.Update(expense);
